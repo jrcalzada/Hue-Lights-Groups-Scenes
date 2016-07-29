@@ -42,12 +42,12 @@ metadata {
 			tileAttribute ("device.switch", key: "PRIMARY_CONTROL") {
 				attributeState "on",  label:'Push', action:"momentary.push", icon:"st.lights.philips.hue-multi", backgroundColor:"#F505F5"
 			}
-		
+
 //        	tileAttribute ("lights", key: "SECONDARY_CONTROL") {
 //                attributeState "lights", label:'The scene controls Hue lights ${currentValue}.'
 //            }
 		}
-    
+
 	    standardTile("refresh", "device.switch", inactiveLabel: false, decoration: "flat", width: 2, height: 2) {
 			state "default", label:"", action:"refresh.refresh", icon:"st.secondary.refresh"
 		}
@@ -59,13 +59,13 @@ metadata {
 		standardTile("updateScene", "device.updateScene", inactiveLabel: false, decoration: "flat", width: 3, height: 2) {
     	   	state "Ready", label: 'Update   Scene', action:"updateSceneFromDevice", backgroundColor:"#FBB215"
 	    }
-	
+
  		valueTile("lights", "device.lights", inactiveLabel: false, decoration: "flat", width: 6, height: 2) {
 			state "default", label: 'Lights: ${currentValue}'
         }
-        
+
     main "switch"
-    details (["switch", "lights", "updateScene", "sceneID", "refresh"]) 
+    details (["switch", "lights", "updateScene", "sceneID", "refresh"])
 	}
 }
 
@@ -90,22 +90,22 @@ def parse(description) {
 
 
 def on() {
-    push()    
+    push()
 }
 
 def push () {
 	def theGroup = device.currentValue("group") ?: 0
-	parent.setToGroup(this, theGroup) 
+	parent.setToGroup(this, theGroup)
     sendEvent(name: "momentary", value: "pushed", isStateChange: true)
     parent.poll()
 }
 
 def setToGroup ( Integer inGroupID ) {
 
-    parent.setToGroup(this, inGroupID)  
+    parent.setToGroup(this, inGroupID)
     log.debug "Executing 'setToGroup' for ${device.label} using groupID ${inGroupID}."
     parent.poll()
-    
+
 }
 
 def updateSceneFromDevice() {
@@ -118,7 +118,7 @@ def updateSceneFromDevice() {
 	String myScene = sceneIDfromD
 
     if (sceneIDfromD == null) {
-    	def sceneIDfromP = parent.getID(this) - "s"
+    	def sceneIDfromP = parent.getID(this)[0..-2]
     	log.debug "Retrieved sceneIDfromP: ${sceneIDfromP}."
         myScene = sceneIDfromP
     }
@@ -131,8 +131,8 @@ def updateSceneFromDevice() {
 
 def getSceneID() {
 
-	def sceneIDfromP = parent.getId(this) - "s"
-    def realSceneID = sceneIDfromP - "s"
+	def sceneIDfromP = parent.getId(this)[0..-2]
+    def realSceneID = sceneIDfromP[0..-2]
     log.debug "Retrieved sceneID: ${sceneIDfromP}."
 	log.debug "Real sceneID: ${realSceneID}."
 
